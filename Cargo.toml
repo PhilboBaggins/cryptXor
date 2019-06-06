@@ -1,5 +1,5 @@
 [package]
-name = "cryptXor"
+name = "crypt_xor"
 version = "0.1.0"
 authors = ["Phil <PhilboBaggins@users.noreply.github.com>"]
 edition = "2018"
