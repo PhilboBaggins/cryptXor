@@ -34,7 +34,7 @@ fn main() {
 
     let block_size = value_t!(matches, "block-size", usize).unwrap();
 
-    let ret = read_and_crypt_xor(input_path, output_path, block_size);
+    let ret = read_and_crypt(input_path, output_path, block_size, &mut crypt_double_xor_in_place);
     if let Err(e) = ret {
         eprintln!("Error: {}", e);
     }
@@ -54,7 +54,7 @@ fn crypt_double_xor_in_place(plaintext: &mut Vec<u8>, key: &Vec<u8>) {
     }
 }
 
-fn read_and_crypt_xor(input_path: &str, output_path: &str, block_size: usize) -> std::io::Result<()> {
+fn read_and_crypt(input_path: &str, output_path: &str, block_size: usize, crypt_func: &mut FnMut(&mut Vec<u8>, &Vec<u8>)) -> std::io::Result<()> {
     let mut input_file = File::open(input_path)?;
     let mut output_file = File::create(output_path)?;
 
@@ -66,7 +66,7 @@ fn read_and_crypt_xor(input_path: &str, output_path: &str, block_size: usize) ->
         if count == 0 {
             break;
         }
-        crypt_double_xor_in_place(&mut buf, &key);
+        crypt_func(&mut buf, &key);
         output_file.write_all(&buf[..count])?;
     }
 
