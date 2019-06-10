@@ -5,8 +5,8 @@ use clap::{App, Arg};
 use std::fs::File;
 use std::io::prelude::*;
 
-const STR_DOUBLE_XOR: &str = "double-xor";
-const STR_TRIPLE_DOUBLE_XOR: &str = "triple-double-xor";
+const FLAG_DOUBLE_XOR: &str = "double-xor";
+const FLAG_TRIPLE_DOUBLE_XOR: &str = "triple-double-xor";
 
 fn main() {
     let matches = App::new("CryptXor")
@@ -35,9 +35,19 @@ fn main() {
             .short("a")
             .long("algorithm")
             .takes_value(true)
-            .default_value("double-xor")
             .multiple(false)
-            .possible_values(&[STR_DOUBLE_XOR, STR_TRIPLE_DOUBLE_XOR]))
+            .possible_values(&[FLAG_DOUBLE_XOR, FLAG_TRIPLE_DOUBLE_XOR])
+            .conflicts_with_all(&[FLAG_DOUBLE_XOR, FLAG_TRIPLE_DOUBLE_XOR]))
+        .arg(Arg::with_name(FLAG_DOUBLE_XOR)
+            .help("Use double-xor algorithm")
+            .long(FLAG_DOUBLE_XOR)
+            .multiple(false)
+            .conflicts_with_all(&["algorithm", FLAG_TRIPLE_DOUBLE_XOR]))
+        .arg(Arg::with_name(FLAG_TRIPLE_DOUBLE_XOR)
+            .help("Use triple double-xor algorithm")
+            .long(FLAG_TRIPLE_DOUBLE_XOR)
+            .multiple(false)
+            .conflicts_with_all(&["algorithm", FLAG_DOUBLE_XOR]))
         .get_matches();
 
     let input_path = matches.value_of("input-file").unwrap();
@@ -45,10 +55,18 @@ fn main() {
 
     let block_size = value_t!(matches, "block-size", usize).unwrap();
 
-    let mut crypt_func = match matches.value_of("algorithm").unwrap() {
-        STR_DOUBLE_XOR => crypt_double_xor_in_place,
-        STR_TRIPLE_DOUBLE_XOR => crypt_triple_double_xor_in_place,
-        _ => panic!("WAT?!"),
+    let algorithm = if matches.is_present(FLAG_DOUBLE_XOR) {
+        FLAG_DOUBLE_XOR
+    } else if matches.is_present(FLAG_TRIPLE_DOUBLE_XOR) {
+        FLAG_TRIPLE_DOUBLE_XOR
+    } else {
+        matches.value_of("algorithm").unwrap_or("")
+    };
+
+    let mut crypt_func = match algorithm {
+        FLAG_DOUBLE_XOR => crypt_double_xor_in_place,
+        FLAG_TRIPLE_DOUBLE_XOR => crypt_triple_double_xor_in_place,
+        _ => crypt_triple_double_xor_in_place,
     };
 
     let ret = read_and_crypt(input_path, output_path, block_size, &mut crypt_func);
