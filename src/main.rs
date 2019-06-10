@@ -17,11 +17,20 @@ fn main() {
             .takes_value(true)
             .required(true)
             .multiple(false))
+        .arg(Arg::with_name("block-size")
+            .help("Block size to read file")
+            .short("b")
+            .long("block-size")
+            .takes_value(true)
+            .default_value("64")
+            .multiple(false))
         .get_matches();
 
-    let (input_file, output_file) =
-        (matches.value_of("input-file").unwrap(),
-         matches.value_of("output-file").unwrap());
+    let input_path = matches.value_of("input-file").unwrap();
+    let output_path = matches.value_of("output-file").unwrap();
+
+    let block_size = value_t!(matches, "block-size", usize).unwrap();
+
 
     println!("Input file  = {}", input_file);
     println!("Output file = {}", output_file);
