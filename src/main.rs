@@ -76,7 +76,8 @@ fn main() {
 }
 
 fn crypt_double_xor_in_place(plaintext: &mut Vec<u8>, key: &Vec<u8>, count: usize) {
-    assert!(plaintext.len() == key.len());
+    assert!(plaintext.len() <= key.len());
+    assert!(plaintext.len() >= count);
 
     // Encrypt once by xor'ing plaintext with key
     for (p, k) in plaintext.iter_mut().take(count).zip(key.iter()) {
