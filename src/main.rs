@@ -58,10 +58,10 @@ fn read_and_crypt(input_path: &str, output_path: &str, block_size: usize, crypt_
     let mut input_file = File::open(input_path)?;
     let mut output_file = File::create(output_path)?;
 
+    let mut buf = vec![0u8; block_size];
     let key = vec![0x55u8; block_size]; // TODO: Use better key
 
     loop {
-        let mut buf = vec![0u8; block_size];
         let count = input_file.read(&mut buf).unwrap();
         if count == 0 {
             break;
