@@ -5,6 +5,9 @@ use clap::{App, Arg};
 use std::fs::File;
 use std::io::prelude::*;
 
+const STR_DOUBLE_XOR: &str = "double-xor";
+const STR_TRIPLE_DOUBLE_XOR: &str = "triple-double-xor";
+
 fn main() {
     let matches = App::new("CryptXor")
         .version(crate_version!())
@@ -27,6 +30,14 @@ fn main() {
             .takes_value(true)
             .default_value("64")
             .multiple(false))
+        .arg(Arg::with_name("algorithm")
+            .help("\"Encryption\" algorithm to use")
+            .short("a")
+            .long("algorithm")
+            .takes_value(true)
+            .default_value("double-xor")
+            .multiple(false)
+            .possible_values(&[STR_DOUBLE_XOR, STR_TRIPLE_DOUBLE_XOR]))
         .get_matches();
 
     let input_path = matches.value_of("input-file").unwrap();
@@ -34,7 +45,13 @@ fn main() {
 
     let block_size = value_t!(matches, "block-size", usize).unwrap();
 
-    let ret = read_and_crypt(input_path, output_path, block_size, &mut crypt_double_xor_in_place);
+    let mut crypt_func = match matches.value_of("algorithm").unwrap() {
+        STR_DOUBLE_XOR => crypt_double_xor_in_place,
+        STR_TRIPLE_DOUBLE_XOR => crypt_triple_double_xor_in_place,
+        _ => panic!("WAT?!"),
+    };
+
+    let ret = read_and_crypt(input_path, output_path, block_size, &mut crypt_func);
     if let Err(e) = ret {
         eprintln!("Error: {}", e);
     }
