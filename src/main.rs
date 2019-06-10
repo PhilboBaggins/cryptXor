@@ -40,21 +40,21 @@ fn main() {
     }
 }
 
-fn crypt_double_xor_in_place(plaintext: &mut Vec<u8>, key: &Vec<u8>) {
+fn crypt_double_xor_in_place(plaintext: &mut Vec<u8>, key: &Vec<u8>, count: usize) {
     assert!(plaintext.len() == key.len());
 
     // Encrypt once by xor'ing plaintext with key
-    for (p, k) in plaintext.iter_mut().zip(key.iter()) {
+    for (p, k) in plaintext.iter_mut().take(count).zip(key.iter()) {
         *p ^= *k;
     }
 
     // Xor again for extra security
-    for (p, k) in plaintext.iter_mut().zip(key.iter()) {
+    for (p, k) in plaintext.iter_mut().take(count).zip(key.iter()) {
         *p ^= *k;
     }
 }
 
-fn read_and_crypt(input_path: &str, output_path: &str, block_size: usize, crypt_func: &mut FnMut(&mut Vec<u8>, &Vec<u8>)) -> std::io::Result<()> {
+fn read_and_crypt(input_path: &str, output_path: &str, block_size: usize, crypt_func: &mut FnMut(&mut Vec<u8>, &Vec<u8>, usize)) -> std::io::Result<()> {
     let mut input_file = File::open(input_path)?;
     let mut output_file = File::create(output_path)?;
 
@@ -66,7 +66,7 @@ fn read_and_crypt(input_path: &str, output_path: &str, block_size: usize, crypt_
         if count == 0 {
             break;
         }
-        crypt_func(&mut buf, &key);
+        crypt_func(&mut buf, &key, count);
         output_file.write_all(&buf[..count])?;
     }
 
