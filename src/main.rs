@@ -2,6 +2,9 @@
 extern crate clap;
 use clap::{App, Arg};
 
+use std::fs::File;
+use std::io::prelude::*;
+
 fn main() {
     let matches = App::new("CryptXor")
         .version(crate_version!())
@@ -31,7 +34,41 @@ fn main() {
 
     let block_size = value_t!(matches, "block-size", usize).unwrap();
 
+    let ret = read_and_crypt_xor(input_path, output_path, block_size);
+    if let Err(e) = ret {
+        eprintln!("Error: {}", e);
+    }
+}
 
-    println!("Input file  = {}", input_file);
-    println!("Output file = {}", output_file);
+fn crypt_double_xor_in_place(plaintext: &mut Vec<u8>, key: &Vec<u8>) {
+    assert!(plaintext.len() == key.len());
+
+    // Encrypt once by xor'ing plaintext with key
+    for (p, k) in plaintext.iter_mut().zip(key.iter()) {
+        *p ^= *k;
+    }
+
+    // Xor again for extra security
+    for (p, k) in plaintext.iter_mut().zip(key.iter()) {
+        *p ^= *k;
+    }
+}
+
+fn read_and_crypt_xor(input_path: &str, output_path: &str, block_size: usize) -> std::io::Result<()> {
+    let mut input_file = File::open(input_path)?;
+    let mut output_file = File::create(output_path)?;
+
+    let key = vec![0x55u8; block_size]; // TODO: Use better key
+
+    loop {
+        let mut buf = vec![0u8; block_size];
+        let count = input_file.read(&mut buf).unwrap();
+        if count == 0 {
+            break;
+        }
+        crypt_double_xor_in_place(&mut buf, &key);
+        output_file.write_all(&buf[..count])?;
+    }
+
+    Ok(())
 }
