@@ -1,9 +1,10 @@
+#[macro_use]
 extern crate clap;
 use clap::{App, Arg};
 
 fn main() {
     let matches = App::new("CryptXor")
-        .version("1.0")
+        .version(crate_version!())
         .about("????? TODO: Add description")
         .author("Phil B.")
         .arg(Arg::with_name("input-file")
