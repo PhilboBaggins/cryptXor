@@ -85,7 +85,7 @@ fn read_and_crypt(input_path: &str, output_path: &str, block_size: usize, crypt_
     let key = vec![0x55u8; block_size]; // TODO: Use better key
 
     loop {
-        let count = input_file.read(&mut buf).unwrap();
+        let count = input_file.read(&mut buf)?;
         if count == 0 {
             break;
         }
