@@ -54,6 +54,12 @@ fn crypt_double_xor_in_place(plaintext: &mut Vec<u8>, key: &Vec<u8>, count: usiz
     }
 }
 
+fn crypt_triple_double_xor_in_place(plaintext: &mut Vec<u8>, key: &Vec<u8>, count: usize) {
+    crypt_double_xor_in_place(plaintext, key, count);
+    crypt_double_xor_in_place(plaintext, key, count);
+    crypt_double_xor_in_place(plaintext, key, count);
+}
+
 fn read_and_crypt(input_path: &str, output_path: &str, block_size: usize, crypt_func: &mut FnMut(&mut Vec<u8>, &Vec<u8>, usize)) -> std::io::Result<()> {
     let mut input_file = File::open(input_path)?;
     let mut output_file = File::create(output_path)?;
