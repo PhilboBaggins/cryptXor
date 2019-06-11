@@ -60,13 +60,16 @@ fn main() {
     } else if matches.is_present(FLAG_TRIPLE_DOUBLE_XOR) {
         FLAG_TRIPLE_DOUBLE_XOR
     } else {
-        matches.value_of("algorithm").unwrap_or("")
+        matches.value_of("algorithm").unwrap_or(FLAG_DOUBLE_XOR)
     };
 
     let mut crypt_func = match algorithm {
         FLAG_DOUBLE_XOR => crypt_double_xor_in_place,
         FLAG_TRIPLE_DOUBLE_XOR => crypt_triple_double_xor_in_place,
-        _ => crypt_triple_double_xor_in_place,
+        _ => {
+            eprintln!("Unknown algorithm \"{}\"", algorithm);
+            return;
+        },
     };
 
     let ret = read_and_crypt(input_path, output_path, block_size, &mut crypt_func);
