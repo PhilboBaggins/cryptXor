@@ -2,6 +2,9 @@
 extern crate clap;
 use clap::{App, Arg};
 
+extern crate exitcode;
+
+use std::process;
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -68,13 +71,16 @@ fn main() {
         FLAG_TRIPLE_DOUBLE_XOR => crypt_triple_double_xor_in_place,
         _ => {
             eprintln!("Unknown algorithm \"{}\"", algorithm);
-            return;
+            process::exit(exitcode::USAGE);
         },
     };
 
-    let ret = read_and_crypt(input_path, output_path, block_size, &mut crypt_func);
-    if let Err(e) = ret {
+    match read_and_crypt(input_path, output_path, block_size, &mut crypt_func) {
+        Ok(_) => process::exit(exitcode::OK),
+        Err(e) => {
         eprintln!("Error: {}", e);
+            process::exit(exitcode::IOERR);
+        }
     }
 }
 
