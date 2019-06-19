@@ -4,6 +4,9 @@ use clap::{App, Arg};
 
 extern crate exitcode;
 
+extern crate rand;
+use rand::prelude::*;
+
 use std::process;
 use std::fs::File;
 use std::io::prelude::*;
@@ -122,7 +125,8 @@ fn read_and_crypt(input_path: &str, output_path: &str, block_size: usize, crypt_
         .progress_chars("#>-"));
 
     let mut buf = vec![0u8; block_size];
-    let key = vec![0x55u8; block_size]; // TODO: Use better key
+    let mut key = vec![0u8; block_size];
+    rand::thread_rng().fill_bytes(&mut key);
 
     let mut bytes_processed = 0usize;
     loop {
