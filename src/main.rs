@@ -8,6 +8,8 @@ use std::process;
 use std::fs::File;
 use std::io::prelude::*;
 
+use indicatif::{ProgressBar, ProgressStyle};
+
 const FLAG_DOUBLE_XOR: &str = "double-xor";
 const FLAG_TRIPLE_DOUBLE_XOR: &str = "triple-double-xor";
 
@@ -78,7 +80,7 @@ fn main() {
     match read_and_crypt(input_path, output_path, block_size, &mut crypt_func) {
         Ok(_) => process::exit(exitcode::OK),
         Err(e) => {
-        eprintln!("Error: {}", e);
+            eprintln!("Error: {}", e);
             process::exit(exitcode::IOERR);
         }
     }
@@ -109,9 +111,20 @@ fn read_and_crypt(input_path: &str, output_path: &str, block_size: usize, crypt_
     let mut input_file = File::open(input_path)?;
     let mut output_file = File::create(output_path)?;
 
+    // Set up progress bar
+    let total_size = match input_file.metadata() {
+        Ok(metadata) => metadata.len(),
+        Err(_) => 0, // TODO: Consider printing error message here
+    };
+    let pb = ProgressBar::new(total_size);
+    pb.set_style(ProgressStyle::default_bar()
+        .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {bytes}/{total_bytes} ({eta})")
+        .progress_chars("#>-"));
+
     let mut buf = vec![0u8; block_size];
     let key = vec![0x55u8; block_size]; // TODO: Use better key
 
+    let mut bytes_processed = 0usize;
     loop {
         let count = input_file.read(&mut buf)?;
         if count == 0 {
@@ -119,6 +132,11 @@ fn read_and_crypt(input_path: &str, output_path: &str, block_size: usize, crypt_
         }
         crypt_func(&mut buf, &key, count);
         output_file.write_all(&buf[..count])?;
+
+        if total_size > 0 {
+            bytes_processed = bytes_processed + count;
+            pb.set_position(bytes_processed as u64);
+        }
     }
 
     Ok(())
