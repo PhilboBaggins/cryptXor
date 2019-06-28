@@ -53,10 +53,14 @@ fn main() {
             .conflicts_with_all(&["algorithm", FLAG_DOUBLE_XOR]))
         .get_matches();
 
+    // Calling unwrap on these command line options is OK because they are marked as required above
     let input_path = matches.value_of("input-file").unwrap();
     let output_path = matches.value_of("output-file").unwrap();
 
-    let block_size = value_t!(matches, "block-size", usize).unwrap();
+    let block_size = value_t!(matches, "block-size", usize).unwrap_or_else(|_| {
+        eprintln!("Invalid block size \"{}\"", matches.value_of("block-size").unwrap());
+        process::exit(exitcode::USAGE);
+    });
 
     let algorithm = if matches.is_present(FLAG_DOUBLE_XOR) {
         FLAG_DOUBLE_XOR
