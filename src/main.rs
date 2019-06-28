@@ -14,7 +14,7 @@ const FLAG_TRIPLE_DOUBLE_XOR: &str = "triple-double-xor";
 fn main() {
     let matches = App::new("CryptXor")
         .version(crate_version!())
-        .about("????? TODO: Add description")
+        .about("A joke encryption utility")
         .author("Phil B.")
         .arg(Arg::with_name("input-file")
             .help("Input file")
