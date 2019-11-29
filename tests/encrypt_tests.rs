@@ -3,7 +3,7 @@ use crypt_xor;
 extern crate rand;
 use rand::prelude::*;
 
-fn encrypt_random_data_test(block_size: usize, crypt_func: &mut FnMut(&mut Vec<u8>, &Vec<u8>, usize)) {
+fn encrypt_random_data_test(block_size: usize, crypt_func: &mut dyn FnMut(&mut Vec<u8>, &Vec<u8>, usize)) {
     let mut buf = vec![0u8; block_size];
     let mut key = vec![0u8; block_size];
 
