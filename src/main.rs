@@ -6,7 +6,7 @@ extern crate exitcode;
 
 use std::process;
 
-use crypt_xor::{read_and_crypt, crypt_double_xor_in_place, crypt_triple_double_xor_in_place};
+use crypt_xor::{crypt_double_xor_in_place, crypt_triple_double_xor_in_place, read_and_crypt};
 
 const FLAG_DOUBLE_XOR: &str = "double-xor";
 const FLAG_TRIPLE_DOUBLE_XOR: &str = "triple-double-xor";
@@ -58,7 +58,10 @@ fn main() {
     let output_path = matches.value_of("output-file").unwrap();
 
     let block_size = value_t!(matches, "block-size", usize).unwrap_or_else(|_| {
-        eprintln!("Invalid block size \"{}\"", matches.value_of("block-size").unwrap());
+        eprintln!(
+            "Invalid block size \"{}\"",
+            matches.value_of("block-size").unwrap()
+        );
         process::exit(exitcode::USAGE);
     });
 
@@ -76,7 +79,7 @@ fn main() {
         _ => {
             eprintln!("Unknown algorithm \"{}\"", algorithm);
             process::exit(exitcode::USAGE);
-        },
+        }
     };
 
     match read_and_crypt(input_path, output_path, block_size, &mut crypt_func) {
