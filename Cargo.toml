@@ -10,7 +10,7 @@ repository = "https://github.com/PhilboBaggins/cryptXor"
 [dependencies]
 clap = "2.33.0"
 exitcode = "1.1.2"
-indicatif = "0.13.0"
+indicatif = "0.16.2"
 rand = "0.8.5"
 
 [dev-dependencies]
