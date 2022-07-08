@@ -10,9 +10,6 @@ use indicatif::{ProgressBar, ProgressStyle};
 
 /// "Encrypt the first `count` bytes of `plaintext` by xor'ing them with `key` twice."
 /// 
-/// The first thing to notice is that the function is marked as `pub`. This means that it is public and
-/// can be called from outside the module
-/// 
 /// Arguments:
 /// 
 /// * `plaintext`: The plaintext to encrypt.
@@ -46,7 +43,7 @@ pub fn crypt_triple_double_xor_in_place(plaintext: &mut Vec<u8>, key: &Vec<u8>, 
     crypt_double_xor_in_place(plaintext, key, count);
 }
 
-/// It reads a file in chunks of `block_size` bytes, encrypts each chunk using the `crypt_func`
+/// Read a file in chunks of `block_size` bytes, encrypts each chunk using the `crypt_func`
 /// function, and writes the encrypted chunk to the output file
 /// 
 /// Arguments:
