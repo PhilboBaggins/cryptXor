@@ -48,6 +48,7 @@ pub fn read_and_crypt(
         .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {bytes}/{total_bytes} ({eta})")
         .progress_chars("#>-"));
 
+    // Random key for maximum security
     let mut buf = vec![0u8; block_size];
     let mut key = vec![0u8; block_size];
     rand::thread_rng().fill_bytes(&mut key);
