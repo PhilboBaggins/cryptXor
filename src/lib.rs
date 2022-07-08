@@ -8,6 +8,16 @@ use std::io::prelude::*;
 
 use indicatif::{ProgressBar, ProgressStyle};
 
+/// "Encrypt the first `count` bytes of `plaintext` by xor'ing them with `key` twice."
+/// 
+/// The first thing to notice is that the function is marked as `pub`. This means that it is public and
+/// can be called from outside the module
+/// 
+/// Arguments:
+/// 
+/// * `plaintext`: The plaintext to encrypt.
+/// * `key`: The key to use for encryption.
+/// * `count`: The number of bytes to encrypt.
 pub fn crypt_double_xor_in_place(plaintext: &mut Vec<u8>, key: &Vec<u8>, count: usize) {
     assert!(plaintext.len() <= key.len());
     assert!(plaintext.len() >= count);
@@ -23,12 +33,32 @@ pub fn crypt_double_xor_in_place(plaintext: &mut Vec<u8>, key: &Vec<u8>, count: 
     }
 }
 
+/// XOR the plaintext with the key three times.
+/// 
+/// Arguments:
+/// 
+/// * `plaintext`: The plaintext to be encrypted.
+/// * `key`: The key to use for encryption.
+/// * `count`: The number of times to encrypt the plaintext.
 pub fn crypt_triple_double_xor_in_place(plaintext: &mut Vec<u8>, key: &Vec<u8>, count: usize) {
     crypt_double_xor_in_place(plaintext, key, count);
     crypt_double_xor_in_place(plaintext, key, count);
     crypt_double_xor_in_place(plaintext, key, count);
 }
 
+/// It reads a file in chunks of `block_size` bytes, encrypts each chunk using the `crypt_func`
+/// function, and writes the encrypted chunk to the output file
+/// 
+/// Arguments:
+/// 
+/// * `input_path`: The path to the file to be encrypted/decrypted
+/// * `output_path`: The path to the output file
+/// * `block_size`: The size of the block to read and write at a time.
+/// * `crypt_func`: A function that takes a buffer, a key, and a count, and crypts the buffer.
+/// 
+/// Returns:
+/// 
+/// A Result<(), std::io::Error>
 pub fn read_and_crypt(
     input_path: &str,
     output_path: &str,
