@@ -3,6 +3,13 @@ use crypt_xor;
 extern crate rand;
 use rand::prelude::*;
 
+/// It generates a random key and a random plaintext, then encrypts the plaintext using the provided
+/// function, and then compares the original plaintext to the ciphertext
+/// 
+/// Arguments:
+/// 
+/// * `block_size`: The size of the block to encrypt.
+/// * `crypt_func`: The function that will be called to encrypt the data.
 fn encrypt_random_data_test(
     block_size: usize,
     crypt_func: &mut dyn FnMut(&mut Vec<u8>, &Vec<u8>, usize),
