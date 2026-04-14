@@ -11,7 +11,7 @@ repository = "https://github.com/PhilboBaggins/cryptXor"
 clap = { version = "3.2.5", features = ["cargo"] }
 exitcode = "1.1.2"
 indicatif = "0.16.2"
-rand = "0.8.5"
+rand = "0.9.3"
 
 [dev-dependencies]
 cargo-husky = "1"
